@@ -2,6 +2,9 @@
 *.db
 *.sqlite
 
+# temporary files
+__pycache__
+
 # project files
 .idea
 
