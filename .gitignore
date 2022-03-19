@@ -1,0 +1,9 @@
+# database files
+*.db
+*.sqlite
+
+# project files
+.idea
+
+# venv
+venv
