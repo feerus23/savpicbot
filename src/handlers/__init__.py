@@ -1,2 +1,5 @@
+from handlers import start
+
+
 def register(dp):
-    pass
+    start.reg(dp)
