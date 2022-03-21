@@ -1,5 +1,6 @@
-from handlers import start
+from handlers import message, command
 
 
 def register(dp):
-    start.reg(dp)
+    commands.reg(dp)
+    message.reg(dp)
