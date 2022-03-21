@@ -7,25 +7,28 @@ cur = con.cursor()
 
 
 def init():
-    cur.execute('CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY KEY, channeltag CHAR(32), \
-    language CHAR(63) NOT NULL DEFAULT rus)')
+    cur.execute('CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY KEY, channel_tag CHAR(32), \
+    language CHAR(63))')
     con.commit()
 
 
 class Users:
     def __init__(self, userid):
-        cur.execute('SELECT channeltag FROM users WHERE userid = ?', (userid,))
+        cur.execute('SELECT * FROM users WHERE userid = ?', (userid,))
         row = cur.fetchone()
 
         if row:
             self.__uid__ = userid
-            self.__tag__ = row[0]
-            self.__lan__ = row[1]
+            self.__tag__ = row[1]
+            self.__lan__ = row[2]
         else:
             self.__uid__ = userid
             self.__lan__ = 'rus'
+            cur.execute('INSERT INTO users (userid, language) VALUES (?, ?)', (userid, 'rus'))
+            con.commit()
 
     def __call__(self, value: str | None = None):
+
         if not value:
             try:
                 tag = self.__tag__
@@ -38,11 +41,16 @@ class Users:
             try:
                 tag = self.__tag__
             except AttributeError:
-                cur.execute('INSERT INTO users (userid, channeltag) VALUES (?, ?)', (uid, value))
+                cur.execute('INSERT INTO users (userid, channel_tag) VALUES (?, ?)', (uid, value))
             else:
-                cur.execute('UPDATE users SET channeltag = ? WHERE userid = ?', (value, uid))
+                cur.execute('UPDATE users SET channel_tag = ? WHERE userid = ?', (value, uid))
 
             con.commit()
 
-    def lang(self):
-        return self.__lan__
+    def lang(self, value: str | None = None):
+        uid = self.__uid__
+        if value:
+            cur.execute('UPDATE users SET language = ? WHERE userid = ?', (value, uid))
+            con.commit()
+        else:
+            return self.__lan__
