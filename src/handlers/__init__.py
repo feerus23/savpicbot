@@ -2,5 +2,5 @@ from handlers import message, command
 
 
 def register(dp):
-    commands.reg(dp)
+    command.reg(dp)
     message.reg(dp)
