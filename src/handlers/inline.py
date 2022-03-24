@@ -10,6 +10,7 @@ async def request(q: InlineQuery):
     uid = q.from_user.id
     lang = Users(uid).lang()
     res = Picture(uid, keyword=t).get()
+    print(res)
 
     if len(res) == 0:
         if '#' in t:
@@ -24,4 +25,4 @@ async def request(q: InlineQuery):
 
 
 def reg(dp: Dispatcher):
-    dp.register_inline_handler(request)
+    dp.register_inline_handler(request, state="*")
