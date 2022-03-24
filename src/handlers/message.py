@@ -21,16 +21,15 @@ async def on_picture_capture(m: Message):
     uid = m.from_user.id
     lang = Users(uid).lang()
 
-    if m.caption:
-        kw = m.caption if len(m.caption) > 0 else "%w"
-        print(len(m.photo), m.photo)
+    kw = m.caption if m.caption else "#w"
+    print(len(m.photo), m.photo)
 
-        if len(m.photo) > 0:
-            n = 0
-            for p in m.photo:
-                if n % 4 == 0:
-                    Picture(uid, kw, p.file_id)
-                n += 1
+    if len(m.photo) > 0:
+        n = 0
+        for p in m.photo:
+            if n % 4 == 0:
+                Picture(uid, kw, p.file_id)
+            n += 1
     else:
         await m.answer(text[lang]['invalid_input'])
 
