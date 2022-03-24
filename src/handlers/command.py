@@ -15,7 +15,6 @@ async def change_language(m: Message):
     await m.answer('Done!')
 
     Users(m.from_user.id).lang(t)
-    await message.start(m)
 
 
 async def settings(m: Message):
