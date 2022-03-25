@@ -6,62 +6,80 @@ cur = con.cursor()
 
 def init():
     cur.execute('CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY \
-    KEY, channel_tag CHAR(32), language CHAR(63))')
+    KEY, default_keyword CHAR(32) NOT NULL DEFAULT `#w`, language CHAR(64))')
     cur.execute('CREATE TABLE IF NOT EXISTS pictures (userid INT NOT NULL, \
-    file_id VARCHAR(255) NOT NULL, keyword CHAR(65), \
+    file_id VARCHAR(256) NOT NULL, keyword CHAR(64), \
     FOREIGN KEY (userid) REFERENCES userid (users))')
     con.commit()
 
 
+def magic_func(_iter: tuple | list | dict, symbol=None):
+    if symbol is None:
+        symbol = ['?', ', ']
+
+    res = ''
+    for i, v in enumerate(_iter):
+        if i != len(_iter):
+            res += symbol[0] + symbol[1]
+        else:
+            res += symbol[0]
+
+    return res
+
+
 class Users:
+    DEFAULT_KW = 0
+    LANGUAGE = 1
+
     def __init__(self, userid):
-        cur.execute('SELECT * FROM users WHERE userid = ?', (userid,))
+        self.__uid = userid
+        cur.execute('SELECT default_keyword, language FROM users WHERE userid = ?', (userid,))
         row = cur.fetchone()
 
         if row:
-            self.__uid__ = userid
-            self.__tag__ = row[1]
-            self.__lan__ = row[2]
+            self.__d = row
         else:
-            self.__uid__ = userid
-            self.__lan__ = None
-            cur.execute(
-                'INSERT INTO users (userid, language) VALUES (?, ?)', (userid,
-                                                                       'rus'))
+            cur.execute('INSERT INTO users (userid, language) VALUES (?, ?)',
+                        (userid, None))
+            con.commit()
+            self.__d = ['w', None]
+
+    def __call__(self, *args, **kwargs):
+        if len(args) > 0:
+            res = tuple()
+            if len(self.__d) == 3:
+                for i in args:
+                    res += (self.__d[i],)
+
+            return res
+
+        into = str()
+        vals = tuple()
+
+        for k, v in kwargs:
+            into += k
+            vals += (v,)
+
+        cur.execute(f'''INSERT OR REPLACE INTO users (userid, {into}) 
+        VALUES (?, {[magic_func(vals)]})''', vals)
+
+        con.commit()
+
+    def lang(self, value=None):
+        if value is None:
+            return self.__d[self.LANGUAGE]
+        else:
+            cur.execute('INSERT OR REPLACE INTO users (userid, language) VALUES (?, ?)',
+                        (self.__uid, value))
             con.commit()
 
-    def __call__(self, value: str | None = None):
-
-        if not value:
-            try:
-                tag = self.__tag__
-            except AttributeError:
-                return None
-            else:
-                return tag
+    def default_keyword(self, value=None):
+        if value is None:
+            return self.__d[self.LANGUAGE]
         else:
-            uid = self.__uid__
-            try:
-                tag = self.__tag__
-            except AttributeError:
-                cur.execute(
-                    'INSERT INTO users (userid, channel_tag) VALUES (?, ?)',
-                    (uid, value))
-            else:
-                cur.execute(
-                    'UPDATE users SET channel_tag = ? WHERE userid = ?',
-                    (value, uid))
-
+            cur.execute('INSERT OR REPLACE INTO users (userid, default_value) VALUES (?, ?)',
+                        (self.__uid, value))
             con.commit()
-
-    def lang(self, value: str | None = None):
-        uid = self.__uid__
-        if value:
-            cur.execute(
-                'UPDATE users SET language = ? WHERE userid = ?', (value, uid))
-            con.commit()
-        else:
-            return self.__lan__
 
 
 class Picture:
