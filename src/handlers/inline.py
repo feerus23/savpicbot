@@ -9,14 +9,14 @@ async def request(q: InlineQuery):
     t = q.query
     uid = q.from_user.id
     lang = Users(uid).lang()
-    res = Picture(uid, keyword=t).get()
+    res = Picture(uid, keyword=t)()
 
     if len(res) == 0:
         if '#' in t:
             t.replace('#', '')
         else:
             t = '#' + t
-        res = Picture(uid, keyword=t).get()
+        res = Picture(uid, keyword=t)()
 
     photos = [InlineQueryResultCachedPhoto(id=item[0][:64], photo_file_id=item[0]) for item in res]
 
