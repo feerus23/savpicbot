@@ -5,7 +5,7 @@ cur = con.cursor()
 
 
 def init():
-    cur.execute('CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY \
+    cur.execute(f'CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY \
     KEY, default_keyword CHAR(32) NOT NULL DEFAULT `#w`, language CHAR(64))')
     cur.execute('CREATE TABLE IF NOT EXISTS pictures (userid INT NOT NULL, \
     file_id VARCHAR(256) NOT NULL, keyword CHAR(64), \
@@ -102,4 +102,15 @@ class Picture:
         user_id = self.__d[0]
         cur.execute('INSERT INTO pictures (userid, file_id, keyword) \
                 VALUES (?, ?, ?)', (user_id, file_id, kw))
+        con.commit()
+
+    @staticmethod
+    def edit_default_keyword(userid, keyword):
+        cur.execute('SELECT default_keyword FROM users WHERE userid = ?', (userid,))
+        row = cur.fetchone()
+        print(row)
+        cur.execute('UPDATE pictures SET keyword = ? WHERE userid = ? AND keyword = ?',
+                    (keyword, userid, row[0]))
+        con.commit()
+        cur.execute('UPDATE users SET default_keyword = ? WHERE userid = ?', (keyword, userid))
         con.commit()

@@ -1,7 +1,8 @@
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.types import Message
-from data.base import Users
-from . import message
+from data.base import Users, Picture
+from data.languages import text
+from . import message, states
 
 cmds = {
     "lang": ['eng', 'rus'],
@@ -17,9 +18,19 @@ async def change_language(m: Message):
 
 
 async def settings(m: Message):
-    await m.answer('Work in progress!')
+    u = Users(m.from_user.id)
+    l = u.lang()
+    await m.answer(text[l]['set_keyword'])
+    await states.States.wait_kw_input.set()
+
+
+async def wki_handler(m: Message, state: FSMContext):
+    Picture.edit_default_keyword(m.from_user.id, m.text)
+    await m.answer('Done!')
+    await state.finish()
 
 
 def reg(dp: Dispatcher):
     dp.register_message_handler(change_language, commands=cmds['lang'], state="*")
     dp.register_message_handler(settings, commands=cmds['sets'], state="*")
+    dp.register_message_handler(wki_handler, state=states.States.wait_kw_input)
