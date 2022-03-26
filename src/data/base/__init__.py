@@ -113,9 +113,10 @@ class Picture:
                     VALUES (?, ?, ?)', (user_id, file_id, keyword))
             con.commit()
         else:
-            cur.execute('SELECT file_id FROM pictures WHERE userid = ? AND keyword = ?',
-                        (user_id, keyword))
+            cur.execute('SELECT file_id FROM pictures WHERE keyword LIKE ? AND userid = ?',
+                        ('%' + keyword + '%', user_id))
             self.__r = cur.fetchall()
+            print(self.__r)
 
     def __call__(self):
         """
