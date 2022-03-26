@@ -41,6 +41,8 @@ class Users:
     DEFAULT_KW = 0
     LANGUAGE = 1
 
+    user_data = {}
+
     def __init__(self, userid):
         """
         Класс-обёртка над SQL таблицей users для упрощенной работы с ней.
@@ -97,6 +99,28 @@ class Users:
             cur.execute('INSERT OR REPLACE INTO users (userid, language) VALUES (?, ?)',
                         (self.__uid, value))
             con.commit()
+
+    def storage(self, *args, default=None, **kwargs):
+        try:
+            udata = self.user_data[self.__uid]
+        except KeyError:
+            udata = self.user_data[self.__uid] = {}
+
+        if len(kwargs):
+            for k, v in kwargs.items():
+                udata.update(k=v)
+        if len(args):
+            res = tuple()
+            for k in args:
+                try:
+                    a = udata[k]
+                except KeyError or IndexError:
+                    return None
+                else:
+                    res += (a,)
+
+            return res
+
 
 
 class Picture:
