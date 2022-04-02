@@ -13,7 +13,7 @@ async def start(m: Message):
     if lang is None:
         await m.answer(text['rus']['first_message'])
     else:
-        await m.answer(text[lang]['second_message'])
+        await m.answer(text[lang]['second_message']('#' + str(u(0))[2:-3]))
         await States.on_pic_cap0.set()
 
 
