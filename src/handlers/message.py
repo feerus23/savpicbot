@@ -22,13 +22,13 @@ async def on_picture_capture(m: Message, state: FSMContext):
     u = Users(uid)
     lang = u.lang()
 
-    kw = m.caption if m.caption else "#w"
+    kw = m.caption if m.caption else "w"
 
     if len(m.photo) > 0:
-        Picture(uid, kw, m.photo[-1].file_id)
+        Picture(uid, kw.replace('#', '', 1) if kw[0] == '#' else kw, m.photo[-1].file_id)
     else:
         await m.answer(text[lang]['send_photo'])
-        await state.update_data(keyword=m.text)
+        await state.update_data(keyword=m.text.replace('#', '', 1) if m.text[0] == '#' else m.text)
         await States.on_pic_cap1.set()
 
 
