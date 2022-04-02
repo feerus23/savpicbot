@@ -10,10 +10,10 @@ def init():
     :return: None
     """
     cur.execute(f'CREATE TABLE IF NOT EXISTS users (userid INT NOT NULL PRIMARY \
-    KEY, default_keyword CHAR(32) NOT NULL DEFAULT `#w`, language CHAR(64))')
+    KEY, default_keyword CHAR(32) NOT NULL DEFAULT `w`, language CHAR(64))')
     cur.execute('CREATE TABLE IF NOT EXISTS pictures (userid INT NOT NULL, \
     file_id VARCHAR(256) NOT NULL, keyword CHAR(64), \
-    FOREIGN KEY (userid) REFERENCES userid (users))')
+    FOREIGN KEY (userid) REFERENCES users (userid))')
     con.commit()
 
 
