@@ -20,7 +20,8 @@ async def request(q: InlineQuery):
 
     photos = [InlineQueryResultCachedPhoto(id=item[0][:64], photo_file_id=item[0]) for item in res]
 
-    await q.answer(photos, cache_time=60, is_personal=True)
+    await q.answer(photos, cache_time=60, is_personal=True,
+                   switch_pm_text=text[lang]["add_pic"], switch_pm_parameter="picadd")
 
 
 def reg(dp: Dispatcher):
