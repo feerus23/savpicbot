@@ -69,7 +69,7 @@ class Users:
         """
         if len(args) > 0:
             res = tuple()
-            if len(self.__d) == 3:
+            if len(self.__d) == 2:
                 for i in args:
                     res += (self.__d[i],)
 
@@ -120,7 +120,6 @@ class Users:
                     res += (a,)
 
             return res
-
 
 
 class Picture:
